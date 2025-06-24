@@ -1,0 +1,15 @@
+
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Region info</title></head>
+<body>
+  <h1>Wybrany region</h1>
+  <p id="output"></p>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const country = params.get("country");
+    const region = params.get("region");
+    document.getElementById("output").textContent = `Kraj: ${country || 'nie wybrano'}, Region: ${region || 'brak'}`;
+  </script>
+</body>
+</html>
