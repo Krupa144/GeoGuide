@@ -8,9 +8,7 @@
 
         public int ContinentId { get; set; }
 
-
-        public string FlagUrl { get; set; }
-
         public string Tip { get; set; }
+
     }
 }

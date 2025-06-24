@@ -11,12 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add controlers 
 builder.Services.AddControllers();
-
-// Add dbcontext
-builder.Services.AddDbContext<GeoContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Add swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

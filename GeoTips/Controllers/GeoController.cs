@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeoTips.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GeoTips.Controllers
@@ -34,6 +35,17 @@ namespace GeoTips.Controllers
                     .ToListAsync();
 
                 return Ok(countries);
+                }
+            [HttpPost("continents")]
+            public async Task<IActionResult> AddContinent([FromBody] Continent continent)
+            {
+                if (continent == null || string.IsNullOrEmpty(continent.Name))
+                {
+                    return BadRequest("Invalid continent data.");
+                }
+                _context.Continents.Add(continent);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetContinents), new { id = continent.Id }, continent);
             }
-        }
+    }
 }
