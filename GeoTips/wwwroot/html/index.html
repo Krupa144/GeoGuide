@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoTips Frontend</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.mapillary@latest/dist/leaflet-mapillary.css" />
+
+    <style>
+        /* Proste style dla kontenerów */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        main {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        #continents-data {
+            border: 1px solid #eee;
+            padding: 15px;
+            min-height: 50px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        #error-message {
+            color: red;
+            font-weight: bold;
+            display: none; /* Ukryte domyślnie */
+            margin-top: 10px;
+        }
+        #map {
+            height: 600px; /* Wysokość mapy */
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #mly {
+            height: 400px; /* Wysokość widoku Mapillary */
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #e0e0e0; /* Kolor tła przed załadowaniem */
+            display: none; /* Ukryte domyślnie, pokażemy po kliknięciu */
+        }
+        .leaflet-popup-content button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .leaflet-popup-content button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Witamy w GeoTips!</h1>
+    </header>
+
+    <main>
+        <h2>Kontynenty</h2>
+        <div id="continents-data">
+            Ładowanie kontynentów...
+        </div>
+        <p class="error-message" id="error-message"></p>
+
+        <hr />
+        <h2>Mapa Świata</h2>
+        <div id="map"></div>
+        <div id="mly"></div> </main>
+
+    <footer>
+        <p>&copy; 2024 GeoTips</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/mapillary-js@latest/dist/mapillary.min.js"></script>
+    <script src="https://unpkg.com/leaflet.mapillary@latest/dist/leaflet.mapillary.js"></script>
+
+    <script src="../js/site.js"></script>
+
+</body>
+</html>

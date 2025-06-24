@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Mapa świata";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet.mapillary@latest/dist/leaflet-mapillary.css" />
+
+<style>
+    #map {
+        height: 600px;
+        width: 100%;
+    }
+
+    #mly { 
+        height: 400px; 
+        width: 100%;
+        margin-top: 20px; 
+    }
+</style>
+
+<h2>@ViewData["Title"]</h2>
+<div id="map"></div>
+<div id="mly"></div> <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                             integrity="sha256-SLa6wboFMptorrco+8qXZoaErX6iWwujtCakFcEChlU="
+                             crossorigin=""></script>
+
+<script src="https://unpkg.com/mapillary-js@latest/dist/mapillary.min.js"></script>
+<script src="https://unpkg.com/leaflet.mapillary@latest/dist/leaflet.mapillary.js"></script>
+
+<script>
+    var map = L.map('map').setView([52.2297, 21.0122], 12); 
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var countries = [
+        { name: "Polska", lat: 52.2297, lon: 21.0122 },
+        { name: "Niemcy", lat: 52.52, lon: 13.405 },
+        { name: "Francja", lat: 48.8566, lon: 2.3522 }
+    ];
+
+    countries.forEach(c => {
+        L.marker([c.lat, c.lon])
+            .addTo(map)
+            .bindPopup(`<b>${c.name}</b><br><button onclick="showMapillary(${c.lat}, ${c.lon})">Pokaż Widok Ulicy</button>`);
+    });
+
+
+    //ID Mapillary Client ID
+
+    const MAPILLARY_CLIENT_ID = '746862837801607'; 
+
+    var viewer; 
+
+    async function showMapillary(lat, lon) {
+        // Sprawdź, czy widżet Mapillary już istnieje i go zniszcz, aby uniknąć duplikatów
+        if (viewer) {
+            viewer.remove();
+            document.getElementById('mly').innerHTML = ''; 
+        }
+
+        viewer = new Mapillary.Viewer({
+            container: 'mly', 
+            accessToken: MAPILLARY_CLIENT_ID,
+            imageId: null, 
+            component: {
+                cover: false 
+            }
+        });
+
+        // Find picture 
+        try {
+            const response = await fetch(`https://graph.mapillary.com/images?at=${lon},${lat}&client_id=${MAPILLARY_CLIENT_ID}`);
+            const data = await response.json();
+
+            if (data.data && data.data.length > 0) {
+                const imageId = data.data[0].id;
+                viewer.moveTo(imageId); 
+                // scroll map 
+                document.getElementById('mly').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Brak dostępnych zdjęć Mapillary dla tej lokalizacji.');
+                // delete container if is null
+                document.getElementById('mly').innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Błąd podczas pobierania danych Mapillary:', error);
+            alert('Wystąpił błąd podczas ładowania widoku Mapillary.');
+            document.getElementById('mly').innerHTML = '';
+        }
+    }
+</script>
