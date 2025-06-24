@@ -1,12 +1,15 @@
-﻿using System.Diagnostics.Metrics;
+﻿using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
+using System.Diagnostics.Metrics;
 
 namespace GeoTips.Models
 {
-    public class Continent
+    [Table("Continents")]
+    public class Continent : BaseModel
     {
+        [PrimaryKey("Id")]
         public int Id { get; set; }
+        [Column("Name")]
         public string Name { get; set; }
-
-
     }
 }
