@@ -1,15 +1,126 @@
-
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Region info</title></head>
+<head>
+  <meta charset="utf-8" />
+  <title>Wybór regionu</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
 <body>
-  <h1>Wybrany region</h1>
-  <p id="output"></p>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const country = params.get("country");
-    const region = params.get("region");
-    document.getElementById("output").textContent = `Kraj: ${country || 'nie wybrano'}, Region: ${region || 'brak'}`;
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const countryName = urlParams.get("country");
+
+      if (!countryName) {
+        alert("Brak nazwy kraju w URL. Przekierowanie do strony głównej.");
+        window.location.href = "index.html";
+        return; // Stop execution if no country is provided
+      }
+
+      const map = L.map('map').setView([20, 0], 2); // Start with a broader view
+
+      // Base Layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      // Function to fetch GeoJSON data
+      async function fetchGeoJSON(url) {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return await response.json();
+        } catch (error) {
+          console.error(`Błąd ładowania danych z ${url}:`, error);
+          return null;
+        }
+      }
+
+      // Load Country Data and Fit Map View
+      async function loadCountryAndRegions() {
+        const countriesData = await fetchGeoJSON("geo/countries.geojson");
+        if (!countriesData) {
+          alert("Nie udało się załadować danych krajów. Spróbuj ponownie później.");
+          return;
+        }
+
+        const countryFeature = countriesData.features.find(f => f.properties.name === countryName);
+
+        if (countryFeature) {
+          const countryLayer = L.geoJSON(countryFeature, {
+            style: {
+              color: '#3388ff', // A clear blue for the country border
+              weight: 3,
+              opacity: 0.8,
+              fillOpacity: 0.1
+            }
+          }).addTo(map);
+          map.fitBounds(countryLayer.getBounds());
+        } else {
+          console.error(`Nie znaleziono kraju: ${countryName}`);
+          alert(`Nie znaleziono danych dla kraju: ${countryName}.`);
+          // Optionally redirect or show a message if the country isn't found
+          return;
+        }
+
+        // Load Regions of the Selected Country
+        const regionsData = await fetchGeoJSON(`geo/regions/${countryName}.geojson`);
+        if (!regionsData) {
+          alert(`Nie udało się załadować danych regionów dla ${countryName}.`);
+          return;
+        }
+
+        L.geoJSON(regionsData, {
+          style: {
+            color: '#28a745', // A vibrant green for region borders
+            weight: 1.5,
+            opacity: 0.7,
+            fillOpacity: 0.2
+          },
+          onEachFeature: (feature, layer) => {
+            const regionName = feature.properties.name;
+            if (regionName) {
+              layer.bindTooltip(regionName, {
+                sticky: true // Tooltip follows the mouse
+              });
+              layer.on('click', () => {
+                window.location.href = `details.html?country=${encodeURIComponent(countryName)}&region=${encodeURIComponent(regionName)}`;
+              });
+              // Add hover effects for better user experience
+              layer.on('mouseover', function() {
+                this.setStyle({
+                  weight: 3,
+                  color: '#0056b3', // Darker blue on hover
+                  fillOpacity: 0.5
+                });
+              });
+              layer.on('mouseout', function() {
+                // Reset style to original
+                this.setStyle({
+                  color: '#28a745',
+                  weight: 1.5,
+                  opacity: 0.7,
+                  fillOpacity: 0.2
+                });
+              });
+            }
+          }
+        }).addTo(map);
+      }
+
+      loadCountryAndRegions();
+    });
   </script>
 </body>
 </html>

@@ -1,11 +1,10 @@
-// Prosty przykład: kliknięcie w kraj → przekierowanie
 const map = L.map('map', {
-    dragging: false // This line disables all dragging (panning)
+    dragging: false 
 }).setView([20, 0], 2);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors',
-  noWrap: true // Still good to keep this for tile repetition
+  noWrap: true 
 }).addTo(map);
 
 function onEachFeature(feature, layer) {

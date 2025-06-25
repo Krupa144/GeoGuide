@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tipy dla regionu</title>
+</head>
+<body>
+  <h1 id="header"></h1>
+  <p id="tip"></p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const country = params.get("country");
+    const region = params.get("region");
+
+    document.getElementById("header").textContent = `${region}, ${country}`;
+
+    fetch('tips.json')
+      .then(res => res.json())
+      .then(tips => {
+        const tip = tips?.[country]?.[region] || "Brak wskazówek dla tego regionu.";
+        document.getElementById("tip").textContent = tip;
+      })
+      .catch(err => {
+        console.error("Błąd ładowania tips.json:", err);
+      });
+  </script>
+</body>
+</html>
