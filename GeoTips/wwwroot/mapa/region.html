@@ -14,6 +14,7 @@
 <body>
   <div id="map"></div>
 
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
@@ -23,17 +24,16 @@
       if (!countryName) {
         alert("Brak nazwy kraju w URL. Przekierowanie do strony głównej.");
         window.location.href = "index.html";
-        return; // Stop execution if no country is provided
+        return; 
       }
 
-      const map = L.map('map').setView([20, 0], 2); // Start with a broader view
+      const map = L.map('map').setView([20, 0], 2);
 
       // Base Layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
-      // Function to fetch GeoJSON data
       async function fetchGeoJSON(url) {
         try {
           const response = await fetch(url);
@@ -47,7 +47,6 @@
         }
       }
 
-      // Load Country Data and Fit Map View
       async function loadCountryAndRegions() {
         const countriesData = await fetchGeoJSON("geo/countries.geojson");
         if (!countriesData) {
@@ -60,7 +59,7 @@
         if (countryFeature) {
           const countryLayer = L.geoJSON(countryFeature, {
             style: {
-              color: '#3388ff', // A clear blue for the country border
+              color: '#3388ff',
               weight: 3,
               opacity: 0.8,
               fillOpacity: 0.1
@@ -70,11 +69,9 @@
         } else {
           console.error(`Nie znaleziono kraju: ${countryName}`);
           alert(`Nie znaleziono danych dla kraju: ${countryName}.`);
-          // Optionally redirect or show a message if the country isn't found
           return;
         }
 
-        // Load Regions of the Selected Country
         const regionsData = await fetchGeoJSON(`geo/regions/${countryName}.geojson`);
         if (!regionsData) {
           alert(`Nie udało się załadować danych regionów dla ${countryName}.`);
@@ -83,7 +80,7 @@
 
         L.geoJSON(regionsData, {
           style: {
-            color: '#28a745', // A vibrant green for region borders
+            color: '#28a745', 
             weight: 1.5,
             opacity: 0.7,
             fillOpacity: 0.2
@@ -92,21 +89,19 @@
             const regionName = feature.properties.name;
             if (regionName) {
               layer.bindTooltip(regionName, {
-                sticky: true // Tooltip follows the mouse
+                sticky: true 
               });
               layer.on('click', () => {
                 window.location.href = `details.html?country=${encodeURIComponent(countryName)}&region=${encodeURIComponent(regionName)}`;
               });
-              // Add hover effects for better user experience
               layer.on('mouseover', function() {
                 this.setStyle({
                   weight: 3,
-                  color: '#0056b3', // Darker blue on hover
+                  color: '#0056b3', 
                   fillOpacity: 0.5
                 });
               });
               layer.on('mouseout', function() {
-                // Reset style to original
                 this.setStyle({
                   color: '#28a745',
                   weight: 1.5,

@@ -1,7 +1,18 @@
 {
   "Poland": {
-    "Mazowieckie": "Zwiedź Warszawę!",
-    "Małopolskie": "Odwiedź Kraków!"
+    "Upper Poland": {
+      "tip": "Zwiedź Warszawę!",
+      "imageUrls": [
+        "../images/Poland tips/slupek.jpg",
+        "../images/Poland tips/volt.jpg",
+        "../images/Poland tips/lodz.png"
+      ],
+      "description": "Stolica Polski z bogatą historią i nowoczesnymi atrakcjami."
+    },
+    "Małopolskie": {
+      "tip": "Odwiedź Kraków!",
+      "imageUrl": "/images/poland-tips/krakow.jpg",
+      "description": "Dawna stolica Polski, pełna zabytków i niepowtarzalnej atmosfery."
+    }
   }
-  
 }

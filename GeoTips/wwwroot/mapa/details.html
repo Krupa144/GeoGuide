@@ -3,26 +3,62 @@
 <head>
   <meta charset="utf-8">
   <title>Tipy dla regionu</title>
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <h1 id="header"></h1>
   <p id="tip"></p>
+  <div id="image-gallery">
+    </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const country = params.get("country");
     const region = params.get("region");
 
-    document.getElementById("header").textContent = `${region}, ${country}`;
+    document.getElementById("header").textContent = `${region || 'Nieznany Region'}, ${country || 'Nieznany Kraj'}`;
 
     fetch('tips.json')
-      .then(res => res.json())
-      .then(tips => {
-        const tip = tips?.[country]?.[region] || "Brak wskazówek dla tego regionu.";
-        document.getElementById("tip").textContent = tip;
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Błąd HTTP! Status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        const regionData = data?.[country]?.[region];
+
+        const tipElement = document.getElementById("tip");
+        const imageGalleryElement = document.getElementById("image-gallery"); 
+
+        imageGalleryElement.innerHTML = '';
+
+        if (regionData && typeof regionData === 'object') {
+          tipElement.textContent = regionData.tip || "Brak szczegółowych wskazówek dla tego regionu.";
+
+          if (regionData.imageUrls && Array.isArray(regionData.imageUrls) && regionData.imageUrls.length > 0) {
+            regionData.imageUrls.forEach(imageUrl => {
+              const imgElement = document.createElement('img');
+              imgElement.src = imageUrl;
+              imgElement.alt = `Zdjęcie regionu ${region}`; 
+              imgElement.classList.add('gallery-image'); 
+              imageGalleryElement.appendChild(imgElement); 
+            });
+          } else {
+            imageGalleryElement.style.display = 'none'; 
+          }
+        } else if (regionData) {
+          tipElement.textContent = regionData;
+          imageGalleryElement.style.display = 'none'; 
+        } else {
+          tipElement.textContent = "Brak wskazówek dla tego regionu.";
+          imageGalleryElement.style.display = 'none'; 
+        }
       })
       .catch(err => {
         console.error("Błąd ładowania tips.json:", err);
+        document.getElementById("tip").textContent = "Wystąpił błąd podczas wczytywania danych.";
+        document.getElementById("image-gallery").style.display = 'none'; 
       });
   </script>
 </body>
