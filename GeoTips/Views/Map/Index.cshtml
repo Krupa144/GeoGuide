@@ -53,14 +53,12 @@
     });
 
 
-    //ID Mapillary Client ID
 
     const MAPILLARY_CLIENT_ID = '746862837801607'; 
 
     var viewer; 
 
     async function showMapillary(lat, lon) {
-        // Sprawdź, czy widżet Mapillary już istnieje i go zniszcz, aby uniknąć duplikatów
         if (viewer) {
             viewer.remove();
             document.getElementById('mly').innerHTML = ''; 
@@ -75,7 +73,6 @@
             }
         });
 
-        // Find picture 
         try {
             const response = await fetch(`https://graph.mapillary.com/images?at=${lon},${lat}&client_id=${MAPILLARY_CLIENT_ID}`);
             const data = await response.json();
@@ -83,11 +80,9 @@
             if (data.data && data.data.length > 0) {
                 const imageId = data.data[0].id;
                 viewer.moveTo(imageId); 
-                // scroll map 
                 document.getElementById('mly').scrollIntoView({ behavior: 'smooth' });
             } else {
                 alert('Brak dostępnych zdjęć Mapillary dla tej lokalizacji.');
-                // delete container if is null
                 document.getElementById('mly').innerHTML = '';
             }
         } catch (error) {

@@ -2,26 +2,26 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Tipy dla regionu</title>
+  <title>Region Tips</title>
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <h1 id="header"></h1>
   <p id="tip"></p>
   <div id="image-gallery">
-    </div>
+  </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const country = params.get("country");
     const region = params.get("region");
 
-    document.getElementById("header").textContent = `${region || 'Nieznany Region'}, ${country || 'Nieznany Kraj'}`;
+    document.getElementById("header").textContent = `${region || 'Unknown Region'}, ${country || 'Unknown Country'}`;
 
     fetch('tips.json')
       .then(res => {
         if (!res.ok) {
-          throw new Error(`Błąd HTTP! Status: ${res.status}`);
+          throw new Error(`HTTP error! Status: ${res.status}`); 
         }
         return res.json();
       })
@@ -34,13 +34,13 @@
         imageGalleryElement.innerHTML = '';
 
         if (regionData && typeof regionData === 'object') {
-          tipElement.textContent = regionData.tip || "Brak szczegółowych wskazówek dla tego regionu.";
+          tipElement.textContent = regionData.tip || "No detailed tips available for this region."; 
 
           if (regionData.imageUrls && Array.isArray(regionData.imageUrls) && regionData.imageUrls.length > 0) {
             regionData.imageUrls.forEach(imageUrl => {
               const imgElement = document.createElement('img');
               imgElement.src = imageUrl;
-              imgElement.alt = `Zdjęcie regionu ${region}`; 
+              imgElement.alt = `Image of ${region} region`; 
               imgElement.classList.add('gallery-image'); 
               imageGalleryElement.appendChild(imgElement); 
             });
@@ -51,13 +51,13 @@
           tipElement.textContent = regionData;
           imageGalleryElement.style.display = 'none'; 
         } else {
-          tipElement.textContent = "Brak wskazówek dla tego regionu.";
+          tipElement.textContent = "No tips available for this region.";
           imageGalleryElement.style.display = 'none'; 
         }
       })
       .catch(err => {
-        console.error("Błąd ładowania tips.json:", err);
-        document.getElementById("tip").textContent = "Wystąpił błąd podczas wczytywania danych.";
+        console.error("Error loading tips.json:", err); 
+        document.getElementById("tip").textContent = "An error occurred while loading data."; 
         document.getElementById("image-gallery").style.display = 'none'; 
       });
   </script>

@@ -1,78 +1,60 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using System.Reflection; 
-using GeoTips.Models; 
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers(); 
 
-// Add controlers 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "GeoTips API",
-        Version = "v1",
-        Description = "API do nauki geografii i map świata"
-    });
-    
-});
+builder.Services.AddSwaggerGen();
 
-// CORS
-builder.Services.AddCors(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var config = builder.Configuration;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-    options.AddPolicy("AllowSpecificOrigin",
-    builder => builder.WithOrigins(
-        "http://localhost:3000",       
-        "http://localhost:5173",       
-        "http://127.0.0.1:5173",      
-        "https://localhost:7197",
-        "http://localhost:5289"
-    )
-    .AllowAnyMethod()
-    .AllowAnyHeader());
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = config["Jwt:Issuer"],
+        ValidAudience = config["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+    };
+});
 
 var app = builder.Build();
 
-// Middleware
-
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseDeveloperExceptionPage(); 
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "GeoTips API v1");
-        c.RoutePrefix = string.Empty; //delete swagger from /swagger to /
-    });
+    app.UseSwaggerUI();
 }
 else
 {
-    app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-
 app.UseStaticFiles();
 
-app.UseRouting();
+app.UseRouting(); 
 
-app.UseCors("AllowSpecificOrigin");
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Serve static files from the "html" directory
-app.MapFallbackToFile("html/index.html");
-
+app.MapGet("/", async context => {
+    context.Response.Redirect("/login.html"); 
+});
 
 app.Run();
