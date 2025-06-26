@@ -13,17 +13,23 @@
 </head>
 <body>
     <header>
-        <div class="logo"><i class="bi bi-globe-americas"></i> GeoGuider</div>
-        <div class="nav-buttons">
-            <button class="btn btn-outline-primary" onclick="window.location.href='/mapa/index.html'">
-                <i class="bi bi-map"></i> Map
-            </button>
-            <button class="btn btn-outline-primary" onclick="window.location.href='/quiz/index.html'">
-                <i class="bi bi-question-circle"></i> Quiz
-            </button>
-            <div id="authButtons" class="d-flex gap-2"></div>
-        </div>
-    </header>
+    <div class="logo">
+        <i class="bi bi-globe-americas"></i> GeoGuider
+    </div>
+    <div class="nav-buttons">
+        
+        <button class="btn btn-outline-primary" onclick="window.location.href='/mapa/index.html'">
+            <i class="bi bi-map-fill"></i> Map
+        </button>
+        <button class="btn btn-outline-primary" onclick="window.location.href='/lession/index.html'">
+            <i class="bi bi-book-fill"></i> Lessions
+        </button>
+        <button class="btn btn-outline-primary" onclick="window.location.href='/quiz/index.html'">
+            <i class="bi bi-question-circle-fill"></i> Quiz
+        </button>
+        <div id="authButtons" class="d-flex gap-2"></div>
+    </div>
+</header>
     <div class="main-content" id="mainBox">
         <div id="authStatus" class="alert alert-info"></div>
        <div id="text-center">
@@ -39,13 +45,23 @@
     <p>
      If you want to test yourself, take a look at our quiz
     </p>
-
-    
-</div>
-
-
     </div>
+        </div>
 
+        <div class="icons-holder" id="icons">
+        
+        </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-content">
+            <a href="https://github.com/Krupa144/GeoGuide"class="github-link">
+                <i class="bi bi-github"></i> GitHub
+            </a>
+            <p class="copyright">© 2025 GeoGuider.</p>
+        </div>
+    </div>
+</footer>
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
