@@ -45,7 +45,11 @@ packages/
 
 appsettings.Local.json
 appsettings.*.user.json
-appsettings.json     
-launchSettings.json  
+appsettings.json
+launchSettings.json
 
 .microsoft/usersecrets/
+
+user/login.html
+user/register.html
+user/user.html
