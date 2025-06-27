@@ -1,45 +1,51 @@
-﻿[Bb]in/ 
-[Oo]bj/ 
-*.user 
-*.suo # Visual Studio Solution User Options (stan rozwiązania)
-*.log # Pliki logów
-*.bak # Kopie zapasowe
-*.cache 
-*.pdb 
+.DS_Store
+Thumbs.db
 
-.vs/ 
-.history/ 
-*.csproj.user 
+[Bb]in/
+[Oo]bj/
+
+*.user
+*.suo
+*.sln.suo
+*.sln.docstates
+*.sln.filters
+*.sln.iml
+
+*.csproj.user
 *.vcxproj.user
 *.sqlproj.user
 *.dbproj.user
+*.pgproj.user
+
 *.vssscc
 *.vspscc
-*.pgproj.user
-*.sln.docstates 
-*.sln.filters 
-*.sln.suo
-*.sln.iml 
 
+*.log
+*.bak
+*.cache
+
+*.pdb
+*.psess
+*.vsp
+*.trx
+TestResults/
+
+*.dbmdl
+
+.vs/
 .vscode/
-.idea/ 
+.idea/
+.history/
 
-packages/ 
+packages/
 *.nupkg
-*.snupkg 
-.nuget/NuGetScratch/ 
+*.snupkg
+.nuget/NuGetScratch/
 .nuget/*.user
 
 appsettings.Local.json
 appsettings.*.user.json
+appsettings.json     
+launchSettings.json  
 
-.microsoft/usersecrets/ 
-
-*.trx
-TestResults/ 
-*.psess 
-*.vsp 
-
-*.dbmdl 
-.DS_Store 
-Thumbs.db 
+.microsoft/usersecrets/
