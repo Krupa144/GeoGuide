@@ -1,9 +1,7 @@
-﻿using GeoTips.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims; 
+using Microsoft.Extensions.Logging;
 
 namespace GeoTips.Controllers
 {
@@ -11,55 +9,26 @@ namespace GeoTips.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private static List<User> _users = new()
-        {
-            new User { Id = 1, Email = "test@geo.com", Password = "123456" }
-        };
+        private readonly ILogger<AuthController> _logger;
 
-        private readonly IConfiguration _config;
-
-        public AuthController(IConfiguration config)
+        public AuthController(ILogger<AuthController> logger)
         {
-            _config = config;
+            _logger = logger;
         }
 
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] UserLoginDto model)
+       
+        
+        [HttpGet("protected-data")]
+        [Authorize] 
+        public IActionResult GetProtectedData()
         {
-            var user = _users.SingleOrDefault(u => u.Email == model.Email && u.Password == model.Password);
-            if (user == null)
-                return Unauthorized("Invalid credentials");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            var token = GenerateJwtToken(user);
-            return Ok(new { token });
+            _logger.LogInformation("Accessed protected data by user ID: {UserId}, Email: {UserEmail}", userId, userEmail);
+
+            return Ok(new { Message = "You have access to protected data!", UserId = userId, UserEmail = userEmail });
         }
 
-        private string GenerateJwtToken(User user)
-        {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddHours(2),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-    }
-
-    public class UserLoginDto
-    {
-        public string Email { get; set; } = "";
-        public string Password { get; set; } = "";
     }
 }
