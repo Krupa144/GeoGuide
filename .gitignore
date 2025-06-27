@@ -4,21 +4,6 @@ Thumbs.db
 [Bb]in/
 [Oo]bj/
 
-*.user
-*.suo
-*.sln.suo
-*.sln.docstates
-*.sln.filters
-*.sln.iml
-
-*.csproj.user
-*.vcxproj.user
-*.sqlproj.user
-*.dbproj.user
-*.pgproj.user
-
-*.vssscc
-*.vspscc
 
 *.log
 *.bak
@@ -49,7 +34,3 @@ appsettings.json
 launchSettings.json
 
 .microsoft/usersecrets/
-
-user/login.html
-user/register.html
-user/user.html
