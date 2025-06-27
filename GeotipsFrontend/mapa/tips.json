@@ -1,0 +1,25 @@
+{
+  "Poland": {
+    "Upper Poland": {
+      "imageUrls": [
+        "../images/Poland tips/slupek.jpg",
+        "../images/Poland tips/volt.jpg",
+        "../images/Poland tips/lodz.png"
+      ]
+    },
+    "Middle Poland": {
+       "imageUrls": [
+        "../images/Poland tips/slupek.jpg",
+        "../images/Poland tips/volt.jpg",
+        "../images/Poland tips/lodz.png"
+      ]
+    },
+    "Lesser Poland": {
+       "imageUrls": [
+        "../images/Poland tips/slupek.jpg",
+        "../images/Poland tips/volt.jpg",
+        "../images/Poland tips/lodz.png"
+      ]
+    }
+  }
+}

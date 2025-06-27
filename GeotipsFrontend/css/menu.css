@@ -1,0 +1,331 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+header {
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+/* buttons */
+.logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0a451a;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* header buttons */
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn {
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-outline-primary {
+    color: #0a451a;
+    border: 1px solid #0a451a !important; 
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0a451a;
+    color: white;
+    border-color: #0a451a !important; 
+}
+
+.btn-primary {
+    background-color: #0a451a;
+    color: white;
+    border: 1px solid #0a451a;
+}
+
+.btn-primary:hover {
+    background-color: #083914;
+    border-color: #083914;
+}
+
+button:focus,
+.btn:focus {
+    box-shadow: 0 0 0 3px rgba(10, 69, 26, 0.3); 
+}
+
+.btn-danger {
+    background-color: #000;
+    color: #ffff;
+}
+
+
+.describe{
+    background-image: url("../images/menu/map.png"); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-position: center; 
+    background-size: cover;
+    min-height: 700px;
+    padding: 20px; 
+}
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin:auto;
+    padding: auto;
+    max-width: 600px;
+    min-height: 500px;
+    background-color: rgb(242, 242, 242);
+    border-radius: 12px;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-success {
+    background-color: #f0fff4;
+    border-left: 4px solid #38c172;
+}
+
+.alert-info {
+    background-color: #f0f7ff;
+    border-left: 4px solid #007aff;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+}
+
+/* text */
+#text-center {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+#text-center h4 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #0a451a;
+    font-weight: 600;
+}
+
+#text-center p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: #000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif    ;
+}
+
+.lessons-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #121212;
+    background-size: cover;
+    background-position: center;
+}
+
+.lessons-box {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 600px;
+    text-align: center;
+    color: #f0f0f0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.lessons-box h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.lessons-box p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.lessons-box button {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.lessons-box button:hover {
+    background-color: #0b5ed7;
+}
+
+.map-holder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("../images/menu/globe.png"); 
+    background-repeat: no-repeat;
+    background-position: center; 
+    background-size: cover;
+    min-height: 700px;
+    padding: 20px; 
+}
+
+.map-container {
+    background-color: rgba(18, 18, 17, 0.85); 
+    gap: 15px; 
+    padding: 40px 30px;
+    border-radius: 15px; 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); 
+    max-width: 600px; 
+    min-height: 350px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; 
+    cursor: default; 
+    transition: none; 
+}
+
+.map-container:hover {
+    opacity: 1; 
+}
+
+.map-container h4 {
+    color: #fff; 
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.map-container p {
+    margin: 0;
+    font-size: 1.1rem; 
+    color: #e0e0e0; 
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.map-container .text-muted {
+    color: #e0e0e0 !important;
+    font-size: 1.1rem;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    margin-bottom: 10px;
+}
+
+.map-container button {
+    margin-top: 20px; 
+    font-weight: 600; 
+    padding: 12px 25px; 
+    border-radius: 10px; 
+    font-size: 1.05rem;
+}
+
+.feature-icon {
+    font-size: 4em; 
+    color: #0a451a; 
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.site-footer {
+    background-color: #fff;
+    border-top: 1px solid #f0f0f0;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+.footer-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.github-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #000;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.github-link:hover {
+    color: #104514;
+}
+
+.copyright {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+button:focus,
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
