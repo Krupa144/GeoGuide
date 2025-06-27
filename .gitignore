@@ -31,5 +31,6 @@ packages/
 appsettings.Local.json
 appsettings.*.user.json
 appsettings.json
+appsettings.Development.json
 launchSettings.json
 
