@@ -1,4 +1,4 @@
-[Bb]in/ 
+﻿[Bb]in/ 
 [Oo]bj/ 
 *.user 
 *.suo # Visual Studio Solution User Options (stan rozwiązania)
@@ -8,8 +8,8 @@
 *.pdb 
 
 .vs/ 
-.history/ # Pliki historii (jeśli używasz)
-*.csproj.user # Ustawienia projektu specyficzne dla użytkownika
+.history/ 
+*.csproj.user 
 *.vcxproj.user
 *.sqlproj.user
 *.dbproj.user
@@ -43,4 +43,3 @@ TestResults/
 *.dbmdl 
 .DS_Store 
 Thumbs.db 
-
