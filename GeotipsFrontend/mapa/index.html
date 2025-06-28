@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>Mapa Świata  Wybór kraju</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/map.css" />
 </head>
 <body>
   <div id="map"></div>
@@ -24,6 +24,7 @@
         window.location.href = `region.html?country=${encodeURIComponent(country)}`;
       });
     }
+    
 
     fetch("geo/countries.geojson")
       .then(res => res.json())

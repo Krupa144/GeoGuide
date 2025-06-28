@@ -99,6 +99,94 @@ button:focus,
 }
 
 
+
+.hero-section {
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    color: white;
+    padding: 5rem 0;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 840px;
+
+}
+
+.hero-content {
+    margin:  auto;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+.hero-cta-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 2rem;
+}
+
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(255,255,255,0.9);
+    color: #2c3e50;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin: 5px;
+}
+
+.hero-cta:hover {
+    background-color: transparent;
+    color: #fff;
+    border-color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.hero-cta i {
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+    opacity: 0.15;
+    z-index: 1;
+}
+
+
+
+
 .describe{
     background-image: url("../images/menu/map.png"); 
     display: flex;
@@ -107,21 +195,33 @@ button:focus,
     background-repeat: no-repeat;
     background-position: center; 
     background-size: cover;
-    min-height: 700px;
+    min-height: 900px;
     padding: 20px; 
 }
 .main-content {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center;     
+    align-items: center;         
     flex-direction: column;
-    margin:auto;
-    padding: auto;
+    margin: auto;
+    padding: 20px;                
     max-width: 600px;
-    min-height: 500px;
+    min-height: 700px;
     background-color: rgb(242, 242, 242);
     border-radius: 12px;
+    text-align: center;           
 }
+
+
+
+.features-list {
+    list-style-type: none; 
+    padding-left: 0;      
+    margin: 0;             
+    text-decoration: #000;
+}
+
+
 
 .alert {
     padding: 1rem;
@@ -165,51 +265,75 @@ button:focus,
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif    ;
 }
 
-.lessons-section {
+.quiz-section {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: #121212;
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+    padding: 2rem;
 }
 
-.lessons-box {
+.quiz-box {
     background-color: rgba(0, 0, 0, 0.7);
-    padding: 2rem;
-    border-radius: 1rem;
-    max-width: 600px;
+    padding: 3rem 2.5rem;
+    border-radius: 1.5rem;
+    max-width: 650px;
+    width: 100%;
     text-align: center;
     color: #f0f0f0;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.lessons-box h2 {
-    font-size: 2rem;
+
+
+.quiz-box i.bi-quora {
+    font-size: 3rem;
+    color: #0d6efd;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.quiz-box h2 {
+    font-size: 2.2rem;
     margin-bottom: 1.5rem;
     color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
-.lessons-box p {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    line-height: 1.6;
+.quiz-box p {
+    font-size: 1.15rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+    color: #e0e0e0;
 }
 
-.lessons-box button {
+.quiz-box button {
     background-color: #0d6efd;
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-size: 1rem;
+    padding: 0.9rem 2rem;
+    border-radius: 0.6rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
 }
 
-.lessons-box button:hover {
+.quiz-box button:hover {
     background-color: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+}
+
+.quiz-box button i {
+    font-size: 1.2rem;
 }
 
 .map-holder {
@@ -220,8 +344,8 @@ button:focus,
     background-repeat: no-repeat;
     background-position: center; 
     background-size: cover;
-    min-height: 700px;
-    padding: 20px; 
+    min-height: 900px;
+    padding: 20px auto; 
 }
 
 .map-container {
@@ -282,11 +406,119 @@ button:focus,
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+
+
+
+
+.lesson-holder {
+    background: #000;
+    padding: 100px 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 850px;
+}
+
+.lesson-holder::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.lesson-container {
+    background-color: #ffffff;
+    border-radius: 24px;
+    padding: 60px 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.lesson-icon {
+    font-size: 64px;
+    color: #0d6efd;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.lesson-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    position: relative;
+    display: inline-block;
+}
+
+.lesson-title::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    border-radius: 3px;
+}
+
+.lesson-description p {
+    color: #555;
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.lesson-description .highlight {
+    color: #333;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.lesson-button {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lesson-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.4);
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+    color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .site-footer {
     background-color: #fff;
     border-top: 1px solid #f0f0f0;
     padding: 2rem 0;
-    margin-top: 3rem;
 }
 
 .footer-container {
@@ -323,9 +555,5 @@ button:focus,
     margin: 0;
 }
 
-button:focus,
-.btn:focus {
-    outline: none;
-    box-shadow: none;
-}
+
 
