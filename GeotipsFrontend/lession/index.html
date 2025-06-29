@@ -1,30 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lessions</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lekcje z Geografii</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
-<body>
-    <div class="container mt-5">
-        <h1>Lessions</h1>
-        <p id="user-email"></p>
+<body class="p-4">
+
+  <div class="container">
+    <h1 class="mb-4">Dostępne Lekcje</h1>
+
+    <div id="lessonsContainer" class="row">
+      <p id="loadingMessage">Ładowanie lekcji...</p>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    <div id="statusMessage" class="alert mt-4" style="display:none;"></div>
+  </div>
 
-        const SUPABASE_URL = 'https://zitxawcefyuhfhqnybyg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppdHhhd2NlZnl1aGZocW55YnlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA3ODg3NzAsImV4cCI6MjA2NjM2NDc3MH0.UCZVX7p38R71IIyR8Nl_HY-w5USCl1wg-QhpCiwLgb8';
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_URL = 'https://zitxawcefyuhfhqnybyg.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_FULL_SUPABASE_ANON_KEY_HERE'; // <--- Wklej tutaj swój Anon Key!
 
-        const { data: { user } } = await supabase.auth.getUser();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        if (!user) {
-            window.location.href = '/user/login.html';
-        } 
-    </script>
+    const backendApiUrl = "https://localhost:7197/api"; // Bazowy URL do Twojego backendu
+    const lessonsContainer = document.getElementById("lessonsContainer");
+    const statusMessageBox = document.getElementById("statusMessage");
+    const loadingMessage = document.getElementById("loadingMessage");
+
+    function displayStatusMessage(message, type = "info") {
+      statusMessageBox.className = `alert alert-${type}`;
+      statusMessageBox.textContent = message;
+      statusMessageBox.style.display = "block";
+    }
+
+    async function loadLessons() {
+      loadingMessage.style.display = "block";
+      lessonsContainer.innerHTML = ''; 
+      displayStatusMessage("Ładowanie lekcji...", "info");
+
+      try {
+        const response = await fetch(`${backendApiUrl}/lessons`); 
+        // Sprawdź, czy odpowiedź jest OK przed próbą parsowania JSON
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Błąd HTTP: ${response.status} - ${errorText}`);
+        }
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            loadingMessage.style.display = "none";
+            displayStatusMessage("Lekcje załadowane pomyślnie.", "success");
+            data.forEach(lesson => {
+              const lessonCard = document.createElement('div');
+              lessonCard.className = 'col-md-6 mb-4'; 
+              lessonCard.innerHTML = `
+                <div class="card">
+                  ${lesson.imageUrl ? `<img src="${lesson.imageUrl}" class="card-img-top" alt="${lesson.title}">` : ''}
+                  <div class="card-body">
+                    <h5 class="card-title">${lesson.title}</h5>
+                    <p class="card-text">${lesson.content}</p>
+                    <div class="form-check mt-3">
+                      <input class="form-check-input" type="checkbox" id="completeLessonCheckbox-${lesson.id}" data-lesson-id="${lesson.id}">
+                      <label class="form-check-label" for="completeLessonCheckbox-${lesson.id}">
+                        Ukończono lekcję
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              `;
+              lessonsContainer.appendChild(lessonCard);
+
+              const checkbox = lessonCard.querySelector(`#completeLessonCheckbox-${lesson.id}`);
+              checkbox.addEventListener("change", async function () {
+                const currentLessonId = parseInt(this.dataset.lessonId);
+                await handleCheckboxChange(this, currentLessonId);
+              });
+            });
+        } else {
+            loadingMessage.style.display = "none";
+            displayStatusMessage("Brak lekcji do wyświetlenia.", "warning");
+        }
+      } catch (error) {
+        loadingMessage.style.display = "none";
+        displayStatusMessage(`Błąd podczas ładowania lekcji: ${error.message}.`, "danger");
+        console.error("Error loading lessons:", error);
+      }
+    }
+
+    async function handleCheckboxChange(checkboxElement, lessonIdToSave) {
+      if (!checkboxElement.checked) {
+        statusMessageBox.style.display = "none";
+        return; 
+      }
+
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error || !session) {
+        displayStatusMessage("Nie jesteś zalogowany! Błąd Supabase: " + (error ? error.message : "Brak aktywnej sesji."), "danger");
+        checkboxElement.checked = false; 
+        return;
+      }
+
+      const token = session.access_token;
+      console.log("Supabase Session Token:", token);
+
+      try {
+        console.log(`Wysyłam żądanie zapisu postępu dla lekcji ID: ${lessonIdToSave}`);
+        const response = await fetch(`${backendApiUrl}/lessons/progress`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ lessonId: lessonIdToSave })
+        });
+
+        let responseData = null; 
+        const contentType = response.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            try {
+                responseData = await response.json(); 
+            } catch (jsonError) {
+                console.error("Błąd podczas parsowania JSON odpowiedzi:", jsonError);
+                const textResponse = await response.text(); 
+                responseData = { message: "Serwer zwrócił nieprawidłowy JSON: " + (textResponse || "Pusta odpowiedź.") };
+            }
+        } else {
+            const textResponse = await response.text();
+            responseData = { message: textResponse || `Serwer zwrócił status ${response.status} bez JSON.` };
+        }
+
+        if (response.ok) {
+          displayStatusMessage(responseData.message ?? "Postęp zapisany!", "success");
+        } else {
+          displayStatusMessage(responseData.message ?? `Wystąpił błąd (${response.status}): ${responseData.detail || responseData.title || "Nieznany błąd."}`, "danger");
+          checkboxElement.checked = false; 
+        }
+      } catch (err) {
+        displayStatusMessage("Błąd sieci: " + err.message + ". Sprawdź połączenie z serwerem i konfigurację CORS.", "danger");
+        checkboxElement.checked = false;
+        console.error("Szczegółowy błąd sieci (catch zewnętrzny):", err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadLessons);
+
+  </script>
 </body>
 </html>
