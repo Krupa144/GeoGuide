@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Supabase;
-using GeoTipsBackend.Models.Data.Lessons; 
-using GeoTipsBackend.Models.Dtos.Lessons; 
-
+using GeoTipsBackend.Models.Data.Lessons;
+using GeoTipsBackend.Models.Dtos.Lessons;
 using static Supabase.Postgrest.Constants.Ordering;
-
+using OperatorEnum = Supabase.Postgrest.Constants.Operator;
 
 [ApiController]
 [Route("api/lessons")]
@@ -38,12 +37,7 @@ public class LessonsController : ControllerBase
                 .Get();
 
             if (response.Models == null || !response.Models.Any())
-            {
-                _logger.LogInformation("No lessons found in the database.");
-                return NotFound("Brak lekcji do wyświetlenia.");
-            }
-
-            _logger.LogInformation("Successfully retrieved {Count} lessons.", response.Models.Count);
+                return NotFound("No lessons.");
 
             var lessonDtos = response.Models.Select(lesson => new LessonDto
             {
@@ -57,13 +51,39 @@ public class LessonsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving lessons.");
-            return StatusCode(500, new
+            _logger.LogError(ex, "Error retrieving  list.");
+            return StatusCode(500, new { message = "Server error while retrieving lessons.", detail = ex.Message });
+        }
+    }
+
+    [HttpGet("{id}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<LessonDto>> GetLessonById(int id)
+    {
+        try
+        {
+            var response = await _supabase
+                .From<Lesson>()
+                .Filter("id", OperatorEnum.Equals, id.ToString())
+                .Get();
+
+            var lesson = response.Models.FirstOrDefault();
+
+            if (lesson == null)
+                return NotFound("Lesson with the given ID was not found.");
+
+            return Ok(new LessonDto
             {
-                message = "Wystąpił błąd podczas pobierania lekcji.",
-                detail = ex.Message,
-                innerException = ex.InnerException?.Message
+                Id = lesson.Id,
+                Title = lesson.Title,
+                Content = lesson.Content,
+                ImageUrl = lesson.ImageUrl
             });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving lesson with ID {Id}.", id);
+            return StatusCode(500, new { message = "Server error while retrieving the lesson.", detail = ex.Message });
         }
     }
 
@@ -73,18 +93,11 @@ public class LessonsController : ControllerBase
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        _logger.LogInformation("Attempting to save progress for UserId: {UserId} and LessonId: {LessonId}", userId ?? "[null]", progress.LessonId);
-
         if (string.IsNullOrEmpty(userId))
-        {
-            _logger.LogWarning("Unauthorized access attempt: User ID not found in claims after authorization.");
-            return Unauthorized("Identyfikator użytkownika nie został znaleziony po pomyślnej autoryzacji. Spróbuj zalogować się ponownie.");
-        }
+            return Unauthorized("User identifier not found.");
 
         try
         {
-            
-
             var newProgress = new Progress
             {
                 UserId = userId,
@@ -96,27 +109,124 @@ public class LessonsController : ControllerBase
                 .From<Progress>()
                 .Upsert(newProgress);
 
-
-
-
             if (response.Models == null || !response.Models.Any())
-            {
-                _logger.LogError("Upsert operation for progress returned no models, or failed silently.");
-                return StatusCode(500, new { message = "Błąd: Zapis postępu nie powiódł się lub nie zwrócił danych.", detail = "Brak zwróconych modeli po Upsert." });
-            }
+                return StatusCode(500, new { message = "Progress failed." });
 
-            _logger.LogInformation("Progress saved/updated successfully for user {UserId} and lesson {LessonId}.", userId, progress.LessonId);
-            return Ok(new { message = "Postęp zapisany pomyślnie!" });
+            return Ok(new { message = "Progress saved});
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error saving progress for user {UserId} and lesson {LessonId}.", userId, progress.LessonId);
-            return StatusCode(500, new
-            {
-                message = "Wystąpił błąd podczas zapisywania postępu.",
-                detail = ex.Message,
-                innerException = ex.InnerException?.Message
-            });
+            _logger.LogError(ex, "Error {UserId} {LessonId}.", userId, progress.LessonId);
+            return StatusCode(500, new { message = "Error saving progress.", detail = ex.Message });
+        }
+    }
+
+    [HttpGet("user/progress")]
+    [Authorize]
+    public async Task<IActionResult> GetUserProgress()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized("User identifier not found.");
+
+        try
+        {
+            var result = await _supabase
+                .From<Progress>()
+                .Filter("user_id", OperatorEnum.Equals, userId)
+                .Filter("is_completed", OperatorEnum.Equals, "true")
+                .Get();
+
+            return Ok(result.Models.Select(p => new { lessonId = p.LessonId }));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving progress for user {UserId}.", userId);
+            return StatusCode(500, new { message = "Server error while retrieving progress.", detail = ex.Message });
+        }
+    }
+
+    [HttpGet("progress/{lessonId}")]
+    [Authorize]
+    public async Task<IActionResult> GetLessonProgress(int lessonId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized("User identifier not found.");
+
+        try
+        {
+            var response = await _supabase
+                .From<Progress>()
+                .Filter("user_id", OperatorEnum.Equals, userId)
+                .Filter("lesson_id", OperatorEnum.Equals, lessonId.ToString())
+                .Filter("is_completed", OperatorEnum.Equals, "true")
+                .Get();
+
+            bool completed = response.Models != null && response.Models.Any();
+
+            return Ok(new { completed });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving progress status for user {UserId} and lesson {LessonId}.", userId, lessonId);
+            return StatusCode(500, new { message = "Server error.", detail = ex.Message });
+        }
+    }
+
+    [HttpPut("progress/{lessonId}/uncomplete")]
+    [Authorize]
+    public async Task<IActionResult> UncompleteLessonProgress(int lessonId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized("User identifier not found.");
+
+        try
+        {
+            var updateData = new Progress { IsCompleted = false };
+
+            var updateResponse = await _supabase
+                .From<Progress>()
+                .Filter("lesson_id", OperatorEnum.Equals, lessonId.ToString())
+                .Filter("user_id", OperatorEnum.Equals, userId)
+                .Update(updateData);
+
+            if (updateResponse.Models != null && updateResponse.Models.Any())
+                return Ok(new { message = "Lesson progress marked as incomplete." });
+            else
+                return NotFound(new { message = "Progress not found for the specified lesson and user." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating progress status for user {UserId} and lesson {LessonId}.", userId, lessonId);
+            return StatusCode(500, new { message = "Server error while updating progress.", detail = ex.Message });
+        }
+    }
+
+    [HttpDelete("progress/{lessonId}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteLessonProgress(int lessonId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized("User identifier not found.");
+
+        try
+        {
+            await _supabase
+                .From<Progress>()
+                .Filter("lesson_id", OperatorEnum.Equals, lessonId.ToString())
+                .Filter("user_id", OperatorEnum.Equals, userId)
+                .Delete();
+
+            return Ok(new { message = "Lesson progress successfully deleted." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting progress for user {UserId} and lesson {LessonId}.", userId, lessonId);
+            return StatusCode(500, new { message = "Server error while deleting progress.", detail = ex.Message });
         }
     }
 }

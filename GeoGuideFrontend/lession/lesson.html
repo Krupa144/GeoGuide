@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Szczegóły Lekcji</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body class="p-4">
+  <div class="container">
+    <a href="index.html" class="btn btn-secondary mb-4">← Powrót do listy</a>
+    <div id="lessonContent">
+      <p>Ładowanie lekcji...</p>
+    </div>
+    <div id="statusMessage" class="alert mt-4" style="display: none;"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://zitxawcefyuhfhqnybyg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppdHhhd2NlZnl1aGZocW55YnlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA3ODg3NzAsImV4cCI6MjA2NjM2NDc3MH0.UCZVX7p38R71IIyR8Nl_HY-w5USCl1wg-QhpCiwLgb8'; // Podmień na swój klucz
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const backendApiUrl = "https://localhost:7197/api";
+    const lessonContainer = document.getElementById("lessonContent");
+    const statusMessageBox = document.getElementById("statusMessage");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const lessonId = urlParams.get("id");
+
+    function displayStatusMessage(message, type = "info") {
+      statusMessageBox.className = `alert alert-${type}`;
+      statusMessageBox.textContent = message;
+      statusMessageBox.style.display = "block";
+      setTimeout(() => {
+        statusMessageBox.style.display = "none";
+      }, 4000);
+    }
+
+    async function loadLesson() {
+      try {
+        const response = await fetch(`${backendApiUrl}/lessons/${lessonId}`);
+        if (!response.ok) {
+          throw new Error(`Błąd HTTP: ${response.status}`);
+        }
+        const lesson = await response.json();
+
+        lessonContainer.innerHTML = `
+          <div class="card">
+            ${lesson.imageUrl ? `<img src="${lesson.imageUrl}" class="card-img-top" alt="${lesson.title}">` : ''}
+            <div class="card-body">
+              <h2 class="card-title">${lesson.title}</h2>
+              <p class="card-text">${lesson.content.replace(/\n/g, "<br>")}</p>
+              <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" id="completeCheckbox" />
+                <label class="form-check-label" for="completeCheckbox">
+                  Ukończono lekcję
+                </label>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const checkbox = document.getElementById("completeCheckbox");
+        checkbox.addEventListener("change", handleCompletion);
+
+        await checkIfLessonCompleted(checkbox);
+
+      } catch (err) {
+        displayStatusMessage("Błąd ładowania lekcji: " + err.message, "danger");
+      }
+    }
+
+    async function checkIfLessonCompleted(checkbox) {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) return; // brak zalogowania
+
+      const token = session.access_token;
+
+      try {
+        const response = await fetch(`${backendApiUrl}/lessons/progress/${lessonId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        checkbox.checked = data.completed === true;
+      } catch (err) {
+        console.error("Błąd przy sprawdzaniu ukończenia lekcji:", err);
+      }
+    }
+
+    async function handleCompletion(event) {
+      const checkbox = event.target;
+
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        displayStatusMessage("Musisz być zalogowany, aby zapisać postęp.", "danger");
+        checkbox.checked = !checkbox.checked; // cofamy zmianę zaznaczenia
+        return;
+      }
+
+      const token = session.access_token;
+
+      try {
+        if (checkbox.checked) {
+          // Zaznacz jako ukończone (POST)
+          const response = await fetch(`${backendApiUrl}/lessons/progress`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ lessonId: parseInt(lessonId) })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            displayStatusMessage(data.message ?? "Postęp zapisany!", "success");
+          } else {
+            displayStatusMessage(data.message ?? "Nie udało się zapisać postępu.", "danger");
+            checkbox.checked = false;
+          }
+        } else {
+          // Odznacz jako nieukończone (DELETE)
+          const response = await fetch(`${backendApiUrl}/lessons/progress/${lessonId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            displayStatusMessage(data.message ?? "Postęp usunięty!", "warning");
+          } else {
+            displayStatusMessage(data.message ?? "Nie udało się usunąć postępu.", "danger");
+            checkbox.checked = true;
+          }
+        }
+      } catch (err) {
+        displayStatusMessage("Błąd sieci: " + err.message, "danger");
+        checkbox.checked = !checkbox.checked; // cofamy zmianę zaznaczenia
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadLesson);
+  </script>
+</body>
+</html>
